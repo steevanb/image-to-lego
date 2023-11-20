@@ -46,7 +46,7 @@
             <img id="originalImage" class="img-fluid" alt="Original Image">
         </div>
         <div class="col">
-            <h2>Processed Image</h2>
+            <h2 id="processedImageTitle">Processed Image</h2>
             <img id="processedImage" class="img-fluid" alt="Processed Image">
         </div>
     </div>
@@ -173,6 +173,12 @@
 
                     // Mettre à jour la visibilité des cases à cocher après le traitement de l'image
                     updateCheckboxVisibility(usedColors);
+
+                    // Calculer et afficher la largeur et la hauteur de l'image générée
+                    const processedImageWidth = canvas.width * 0.78; // Convertir de pixels à cm
+                    const processedImageHeight = canvas.height * 0.78; // Convertir de pixels à cm
+                    const processedImageTitle = `Processed Image (${processedImageWidth.toFixed(2)}cm x ${processedImageHeight.toFixed(2)}cm)`;
+                    document.getElementById('processedImageTitle').innerText = processedImageTitle;
                 };
             };
 
