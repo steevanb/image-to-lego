@@ -103,12 +103,22 @@
         cellCounter++;
     }
 
+    // Ajouter des écouteurs d'événements à chaque case à cocher
+    const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
+
+    for (const checkbox of checkboxes) {
+        checkbox.addEventListener('change', function () {
+            updateCheckboxVisibility();
+        });
+    }
+
     // Gérer le clic sur la case à cocher "Check All"
     document.getElementById('checkAll').addEventListener('click', function () {
         const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
         for (const checkbox of checkboxes) {
             checkbox.checked = true;
         }
+        updateCheckboxVisibility();
     });
 
     // Gérer le clic sur la case à cocher "Uncheck All"
@@ -117,6 +127,7 @@
         for (const checkbox of checkboxes) {
             checkbox.checked = false;
         }
+        updateCheckboxVisibility();
     });
 
     // Récupérez l'élément d'entrée de fichier
@@ -209,7 +220,7 @@
                     }
 
                     // Calculer le nombre total de pixels dans l'image générée
-                    const totalPixels = (imageData.width * imageData.height).toLocaleString('fr-FR');
+                    const totalPixels = (imageData.width * imageData.height).toLocaleString('en-EN');
 
                     const processedImageTitle = `Processed Image - ${processedImageWidth.toFixed(2)}${processedImageWidthUnit} x ${processedImageHeight.toFixed(2)}${processedImageHeightUnit} - ${totalPixels} legos 1x1`;
                     document.getElementById('processedImageTitle').innerText = processedImageTitle;
@@ -221,7 +232,7 @@
                         const label = checkbox.parentElement; // Récupérer l'élément parent, c'est-à-dire le label
 
                         if (usedColors.includes(color)) {
-                            const pixelCount = countPixels(imageData, hexToRgb(color)).toLocaleString('fr-FR');
+                            const pixelCount = countPixels(imageData, hexToRgb(color)).toLocaleString('en-EN');
                             label.lastElementChild.innerText = ` (${pixelCount})`;
                         } else {
                             label.lastElementChild.innerText = '';
@@ -285,14 +296,21 @@
         return paddedHex.toUpperCase();
     }
 
-    function updateCheckboxVisibility(usedColors) {
+    function updateCheckboxVisibility(usedColors = null) {
         const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
+        if (usedColors === null) {
+            usedColors = getCheckedColors();
+        }
 
         for (const checkbox of checkboxes) {
             const color = checkbox.value;
 
             // Vérifier si la couleur a été utilisée dans l'image générée
-            checkbox.checked = (usedColors.includes(color));
+            const isChecked = usedColors.includes(color);
+            checkbox.checked = isChecked;
+
+            // Masquer ou afficher la case à cocher en fonction de son état
+            checkbox.parentElement.style.display = isChecked ? 'block' : 'none';
         }
     }
 
@@ -318,6 +336,13 @@
         for (const checkbox of checkboxes) {
             checkbox.checked = true;
         }
+    }
+
+    // Fonction pour récupérer les couleurs cochées
+    function getCheckedColors() {
+        return Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
     }
 </script>
 
