@@ -10,6 +10,16 @@
         body {
             cursor: default;
         }
+
+        .card,
+        img,
+        button,
+        .btn,
+        input[type="file"],
+        input[type="checkbox"],
+        table {
+            border-radius: 0; /* Supprime les bords arrondis pour ces éléments */
+        }
     </style>
 </head>
 <body>
@@ -28,7 +38,7 @@
             <!-- Section 2: Lego Colors Selection -->
             <div class="container mt-3">
                 <h3>Select Lego colors</h3>
-                <div>
+                <div class="mb-2">
                     <label>
                         <button id="checkAll" class="btn btn-primary"> Check All</button>
                     </label>
@@ -45,7 +55,7 @@
                 </div>
             </div>
 
-            <div class="container mt-3">
+            <div class="container mt-4">
                 <button class="btn btn-success w-100" onclick="processImage()">Process image</button>
             </div>
         </div>
@@ -53,7 +63,7 @@
 </div>
 
 <!-- Images Display Section -->
-<div class="container-fluid mt-2 d-none" id="imageDisplaySection">
+<div class="container-fluid mt-3 d-none" id="imageDisplaySection">
     <div class="row">
         <div class="col-md-6">
             <div class="card bg-light mb-3">
