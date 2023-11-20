@@ -14,45 +14,76 @@
 </head>
 <body>
 
-<!-- Image Upload Section -->
-<div class="container mt-5">
-    <h1 class="mb-4">Image Processor</h1>
-    <div class="mb-3">
-        <label for="imageUpload" class="form-label">Upload an image</label>
-        <input type="file" class="form-control" id="imageUpload">
-    </div>
+<!-- Section 1: Image Upload -->
+<div class="container mt-3">
+    <div class="card bg-light">
+        <div class="card-body">
+            <div class="container">
+                <h3 class="mb-4">Image processor</h3>
+                <div class="mb-3">
+                    <input type="file" class="form-control" id="imageUpload">
+                </div>
+            </div>
 
-    <!-- Checkbox table for Lego colors -->
-    <h5>Select Lego Colors:</h5>
-    <div>
-        <label>
-            <button id="checkAll" class="btn btn-primary"> Check All</button>
-        </label>
-        <label>
-            <button id="uncheckAll" class="btn btn-primary"> Uncheck All</button>
-        </label>
-    </div>
-    <div class="mb-3" id="legoColorsCheckboxes">
-        <table class="w-100">
-            <tbody id="checkboxRow">
-            <tr></tr>
-            </tbody>
-        </table>
-    </div>
+            <!-- Section 2: Lego Colors Selection -->
+            <div class="container mt-3">
+                <h3>Select Lego colors</h3>
+                <div>
+                    <label>
+                        <button id="checkAll" class="btn btn-primary"> Check All</button>
+                    </label>
+                    <label>
+                        <button id="uncheckAll" class="btn btn-primary"> Uncheck All</button>
+                    </label>
+                </div>
+                <div id="legoColorsCheckboxes">
+                    <table class="w-100">
+                        <tbody id="checkboxRow">
+                        <tr></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
-    <button class="btn btn-success" onclick="processImage()">Process image</button>
+            <div class="container mt-3">
+                <button class="btn btn-success w-100" onclick="processImage()">Process image</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Images Display Section -->
-<div class="container-fluid mt-5 d-none" id="imageDisplaySection">
+<div class="container-fluid mt-2 d-none" id="imageDisplaySection">
     <div class="row">
-        <div class="col">
-            <h2 class="text-center">Original Image</h2>
-            <img id="originalImage" class="img-fluid mx-auto d-block" alt="Original Image">
+        <div class="col-md-6">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <table class="table table-primary" style="table-layout: fixed;">
+                        <tbody>
+                        <tr>
+                            <td class="text-center">
+                                <p id="imageInfo" class="mb-0">Original image</p>
+                            </td>
+                            <td class="text-center">
+                                <p id="imageDimensions" class="mb-0"></p>
+                            </td>
+                            <td class="text-center">
+                                <p id="imageSize" class="mb-0"></p>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <img id="originalImage" class="img-fluid mx-auto d-block" alt="Original Image">
+                </div>
+            </div>
         </div>
-        <div class="col">
-            <h2 id="processedImageTitle" class="text-center">Processed Image</h2>
-            <img id="processedImage" class="img-fluid mx-auto d-block" alt="Processed Image">
+        <div class="col-md-6">
+            <div class="card bg-light mb-3">
+                <div class="card-body">
+                    <h2 id="processedImageTitle" class="text-center">Processed Image</h2>
+                    <img id="processedImage" class="img-fluid mx-auto d-block" alt="Processed Image">
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -238,6 +269,9 @@
                             label.lastElementChild.innerText = '';
                         }
                     }
+
+                    updateImageDimensions();
+                    updateImageSize();
                 };
             };
 
@@ -343,6 +377,54 @@
         return Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value);
+    }
+
+    // Ajoutez cette fonction pour calculer les dimensions de l'image
+    function updateImageDimensions() {
+        const imageUpload = document.getElementById('imageUpload');
+        const imageDimensionsElement = document.getElementById('imageDimensions');
+
+        if (imageUpload.files.length > 0) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = function () {
+                    const dimensions = `Dimensions: ${img.width} x ${img.height} pixels`;
+                    imageDimensionsElement.innerText = dimensions;
+                };
+            };
+
+            reader.readAsDataURL(imageUpload.files[0]);
+        } else {
+            // Réinitialisez le texte si aucun fichier n'est sélectionné
+            imageDimensionsElement.innerText = '';
+        }
+    }
+
+    // Ajoutez cette fonction pour mettre à jour la taille de l'image en KB ou MB
+    function updateImageSize() {
+        const imageUpload = document.getElementById('imageUpload');
+        const imageSizeElement = document.getElementById('imageSize');
+
+        if (imageUpload.files.length > 0) {
+            const fileSizeInKB = imageUpload.files[0].size / 1024;
+            let fileSize;
+
+            if (fileSizeInKB < 1024) {
+                fileSize = fileSizeInKB.toFixed(2) + ' KB';
+            } else {
+                fileSize = (fileSizeInKB / 1024).toFixed(2) + ' MB';
+            }
+
+            // Ajoutez "Size: " devant la taille de l'image
+            imageSizeElement.innerText = 'Size: ' + fileSize;
+        } else {
+            // Réinitialisez le texte si aucun fichier n'est sélectionné
+            imageSizeElement.innerText = '';
+        }
     }
 </script>
 
