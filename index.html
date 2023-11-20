@@ -6,6 +6,11 @@
     <title>Image Processor</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            cursor: default;
+        }
+    </style>
 </head>
 <body>
 
@@ -21,33 +26,33 @@
     <h5>Select Lego Colors:</h5>
     <div>
         <label>
-            <button id="checkAll"> Check All</button>
+            <button id="checkAll" class="btn btn-primary"> Check All</button>
         </label>
         <label>
-            <button id="uncheckAll"> Uncheck All</button>
+            <button id="uncheckAll" class="btn btn-primary"> Uncheck All</button>
         </label>
     </div>
     <div class="mb-3" id="legoColorsCheckboxes">
-        <table>
+        <table class="w-100">
             <tbody id="checkboxRow">
             <tr></tr>
             </tbody>
         </table>
     </div>
 
-    <button class="btn btn-primary" onclick="processImage()">Process image</button>
+    <button class="btn btn-success" onclick="processImage()">Process image</button>
 </div>
 
 <!-- Images Display Section -->
-<div class="container mt-5 d-none" id="imageDisplaySection">
+<div class="container-fluid mt-5 d-none" id="imageDisplaySection">
     <div class="row">
         <div class="col">
-            <h2>Original Image</h2>
-            <img id="originalImage" class="img-fluid" alt="Original Image">
+            <h2 class="text-center">Original Image</h2>
+            <img id="originalImage" class="img-fluid mx-auto d-block" alt="Original Image">
         </div>
         <div class="col">
-            <h2 id="processedImageTitle">Processed Image</h2>
-            <img id="processedImage" class="img-fluid" alt="Processed Image">
+            <h2 id="processedImageTitle" class="text-center">Processed Image</h2>
+            <img id="processedImage" class="img-fluid mx-auto d-block" alt="Processed Image">
         </div>
     </div>
 </div>
@@ -64,7 +69,7 @@
     let cellCounter = 0;
 
     for (const color in legoColors) {
-        if (cellCounter === 8) {
+        if (cellCounter === 6) {
             cellCounter = 0;
             checkboxRow.appendChild(document.createElement('tr'));
         }
@@ -74,13 +79,21 @@
         checkbox.value = color;
         checkbox.id = color;
         checkbox.checked = true; // Default to checked
+        checkbox.style.marginLeft = '5px';
+        checkbox.style.marginRight = '3px';
+
+        // Ajouter le span pour le nombre de pixels
+        const pixelCountSpan = document.createElement('span');
+        pixelCountSpan.className = 'pixel-count';
 
         const label = document.createElement('label');
         label.htmlFor = color;
         label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(legoColors[color]));
+        label.appendChild(document.createTextNode(legoColors[color].name));
+        label.appendChild(pixelCountSpan);
         label.style.backgroundColor = '#' + color;
         label.style.width = '100%';
+        label.style.color = legoColors[color].textColor;
 
         const cell = document.createElement('td');
         cell.appendChild(label);
@@ -104,6 +117,14 @@
         for (const checkbox of checkboxes) {
             checkbox.checked = false;
         }
+    });
+
+    // Récupérez l'élément d'entrée de fichier
+    const imageUpload = document.getElementById('imageUpload');
+
+    // Attachez un événement au changement de l'entrée de fichier pour cocher toutes les cases
+    imageUpload.addEventListener('change', function() {
+        checkAllCheckboxes();
     });
 
     function processImage() {
@@ -169,16 +190,43 @@
                         }
                     }
 
-                    console.log(usedColors);
-
                     // Mettre à jour la visibilité des cases à cocher après le traitement de l'image
                     updateCheckboxVisibility(usedColors);
 
                     // Calculer et afficher la largeur et la hauteur de l'image générée
-                    const processedImageWidth = canvas.width * 0.78; // Convertir de pixels à cm
-                    const processedImageHeight = canvas.height * 0.78; // Convertir de pixels à cm
-                    const processedImageTitle = `Processed Image (${processedImageWidth.toFixed(2)}cm x ${processedImageHeight.toFixed(2)}cm)`;
+                    let processedImageWidth = canvas.width * 0.8; // Convertir de pixels à cm
+                    let processedImageWidthUnit = 'cm';
+                    if (processedImageWidth > 100) {
+                        processedImageWidth = processedImageWidth / 100;
+                        processedImageWidthUnit = 'm';
+                    }
+
+                    let processedImageHeight = canvas.height * 0.8; // Convertir de pixels à cm
+                    let processedImageHeightUnit = 'm';
+                    if (processedImageHeight > 100) {
+                        processedImageHeight = processedImageHeight / 100;
+                        processedImageHeightUnit = 'm';
+                    }
+
+                    // Calculer le nombre total de pixels dans l'image générée
+                    const totalPixels = (imageData.width * imageData.height).toLocaleString('fr-FR');
+
+                    const processedImageTitle = `Processed Image - ${processedImageWidth.toFixed(2)}${processedImageWidthUnit} x ${processedImageHeight.toFixed(2)}${processedImageHeightUnit} - ${totalPixels} legos 1x1`;
                     document.getElementById('processedImageTitle').innerText = processedImageTitle;
+
+                    // Afficher le nombre de pixels de la couleur du background dans le label
+                    const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
+                    for (const checkbox of checkboxes) {
+                        const color = checkbox.value;
+                        const label = checkbox.parentElement; // Récupérer l'élément parent, c'est-à-dire le label
+
+                        if (usedColors.includes(color)) {
+                            const pixelCount = countPixels(imageData, hexToRgb(color)).toLocaleString('fr-FR');
+                            label.lastElementChild.innerText = ` (${pixelCount})`;
+                        } else {
+                            label.lastElementChild.innerText = '';
+                        }
+                    }
                 };
             };
 
@@ -245,6 +293,30 @@
 
             // Vérifier si la couleur a été utilisée dans l'image générée
             checkbox.checked = (usedColors.includes(color));
+        }
+    }
+
+    // Ajouter une fonction pour compter le nombre de pixels d'une couleur spécifique dans l'image
+    function countPixels(imageData, targetColor) {
+        const pixels = imageData.data;
+        let count = 0;
+
+        for (let i = 0; i < pixels.length; i += 4) {
+            const pixelColor = [pixels[i], pixels[i + 1], pixels[i + 2]];
+
+            if (pixelColor.every((value, index) => value === targetColor[index])) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    // Ajoutez une fonction pour cocher toutes les cases
+    function checkAllCheckboxes() {
+        const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
+        for (const checkbox of checkboxes) {
+            checkbox.checked = true;
         }
     }
 </script>
