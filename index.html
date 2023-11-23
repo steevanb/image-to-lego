@@ -72,7 +72,7 @@
                         <tbody>
                         <tr>
                             <td class="text-center">
-                                <p id="imageInfo" class="mb-0">Original image</p>
+                                <p class="mb-0">Original image</p>
                             </td>
                             <td class="text-center">
                                 <p id="imageDimensions" class="mb-0"></p>
@@ -87,10 +87,24 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-6" id="processedImageSection">
             <div class="card bg-light mb-3">
                 <div class="card-body">
-                    <h2 id="processedImageTitle" class="text-center">Processed Image</h2>
+                    <table class="table table-primary" style="table-layout: fixed;">
+                        <tbody>
+                        <tr>
+                            <td class="text-center">
+                                <p class="mb-0">Processed image</p>
+                            </td>
+                            <td class="text-center">
+                                <p id="processsedImageDimensions" class="mb-0"></p>
+                            </td>
+                            <td class="text-center">
+                                <p id="processsedImageLegosCount" class="mb-0"></p>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                     <img id="processedImage" class="img-fluid mx-auto d-block" alt="Processed Image">
                 </div>
             </div>
@@ -147,19 +161,12 @@
     // Ajouter des écouteurs d'événements à chaque case à cocher
     const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
 
-    for (const checkbox of checkboxes) {
-        checkbox.addEventListener('change', function () {
-            updateCheckboxVisibility();
-        });
-    }
-
     // Gérer le clic sur la case à cocher "Check All"
     document.getElementById('checkAll').addEventListener('click', function () {
         const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
         for (const checkbox of checkboxes) {
             checkbox.checked = true;
         }
-        updateCheckboxVisibility();
     });
 
     // Gérer le clic sur la case à cocher "Uncheck All"
@@ -168,7 +175,6 @@
         for (const checkbox of checkboxes) {
             checkbox.checked = false;
         }
-        updateCheckboxVisibility();
     });
 
     // Récupérez l'élément d'entrée de fichier
@@ -177,6 +183,11 @@
     // Attachez un événement au changement de l'entrée de fichier pour cocher toutes les cases
     imageUpload.addEventListener('change', function() {
         checkAllCheckboxes();
+        updateImageDimensions();
+        updateImageSize();
+        updateImageAndTable();
+        document.getElementById('imageDisplaySection').classList.remove('d-none');
+        document.getElementById('processedImageSection').classList.add('d-none');
     });
 
     function processImage() {
@@ -225,6 +236,7 @@
 
                     // Show the image display section
                     imageDisplaySection.classList.remove('d-none');
+                    document.getElementById('processedImageSection').classList.remove('d-none');
 
                     // Store the used colors in an array
                     const usedColors = [];
@@ -242,29 +254,7 @@
                         }
                     }
 
-                    // Mettre à jour la visibilité des cases à cocher après le traitement de l'image
-                    updateCheckboxVisibility(usedColors);
-
-                    // Calculer et afficher la largeur et la hauteur de l'image générée
-                    let processedImageWidth = canvas.width * 0.8; // Convertir de pixels à cm
-                    let processedImageWidthUnit = 'cm';
-                    if (processedImageWidth > 100) {
-                        processedImageWidth = processedImageWidth / 100;
-                        processedImageWidthUnit = 'm';
-                    }
-
-                    let processedImageHeight = canvas.height * 0.8; // Convertir de pixels à cm
-                    let processedImageHeightUnit = 'm';
-                    if (processedImageHeight > 100) {
-                        processedImageHeight = processedImageHeight / 100;
-                        processedImageHeightUnit = 'm';
-                    }
-
-                    // Calculer le nombre total de pixels dans l'image générée
-                    const totalPixels = (imageData.width * imageData.height).toLocaleString('en-EN');
-
-                    const processedImageTitle = `Processed Image - ${processedImageWidth.toFixed(2)}${processedImageWidthUnit} x ${processedImageHeight.toFixed(2)}${processedImageHeightUnit} - ${totalPixels} legos 1x1`;
-                    document.getElementById('processedImageTitle').innerText = processedImageTitle;
+                    updateCheckboxes(usedColors);
 
                     // Afficher le nombre de pixels de la couleur du background dans le label
                     const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
@@ -282,6 +272,8 @@
 
                     updateImageDimensions();
                     updateImageSize();
+                    updateProcessedImageDimensions();
+                    updateProcessedImageLegosCount();
                 };
             };
 
@@ -340,21 +332,11 @@
         return paddedHex.toUpperCase();
     }
 
-    function updateCheckboxVisibility(usedColors = null) {
+    function updateCheckboxes(usedColors) {
         const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
-        if (usedColors === null) {
-            usedColors = getCheckedColors();
-        }
 
         for (const checkbox of checkboxes) {
-            const color = checkbox.value;
-
-            // Vérifier si la couleur a été utilisée dans l'image générée
-            const isChecked = usedColors.includes(color);
-            checkbox.checked = isChecked;
-
-            // Masquer ou afficher la case à cocher en fonction de son état
-            checkbox.parentElement.style.display = isChecked ? 'block' : 'none';
+            checkbox.checked = usedColors.includes(checkbox.value);
         }
     }
 
@@ -380,13 +362,6 @@
         for (const checkbox of checkboxes) {
             checkbox.checked = true;
         }
-    }
-
-    // Fonction pour récupérer les couleurs cochées
-    function getCheckedColors() {
-        return Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.value);
     }
 
     // Ajoutez cette fonction pour calculer les dimensions de l'image
@@ -436,6 +411,87 @@
             imageSizeElement.innerText = '';
         }
     }
+
+    function updateProcessedImageDimensions() {
+        const processedImage = document.getElementById('processedImage');
+        const processedImageDimensionsElement = document.getElementById('processsedImageDimensions');
+
+        if (processedImage.src) {
+            // Calculer et afficher la largeur et la hauteur de l'image générée
+            let processedImageWidth = processedImage.naturalWidth * 0.8; // Convertir de pixels à cm
+            let processedImageWidthUnit = 'cm';
+            if (processedImageWidth > 100) {
+                processedImageWidth = processedImageWidth / 100;
+                processedImageWidthUnit = 'm';
+            }
+
+            let processedImageHeight = processedImage.naturalHeight * 0.8; // Convertir de pixels à cm
+            let processedImageHeightUnit = 'm';
+            if (processedImageHeight > 100) {
+                processedImageHeight = processedImageHeight / 100;
+                processedImageHeightUnit = 'm';
+            }
+
+            const dimensions = `Dimensions: ${processedImageWidth.toFixed(2)}${processedImageWidthUnit} x ${processedImageHeight.toFixed(2)}${processedImageHeightUnit}`;
+            processedImageDimensionsElement.innerText = dimensions;
+        } else {
+            // Réinitialisez le texte si aucune image n'a été générée
+            processedImageDimensionsElement.innerText = '';
+        }
+    }
+
+    function updateProcessedImageLegosCount() {
+        const processedImage = document.getElementById('processedImage');
+        const processedImageLegosCountElement = document.getElementById('processsedImageLegosCount');
+
+        if (processedImage.src) {
+            // Obtenez les dimensions de l'image traitée
+            const width = processedImage.naturalWidth;
+            const height = processedImage.naturalHeight;
+
+            // Calculez le nombre total de pixels dans l'image
+            const totalPixels = (width * height).toLocaleString('en-EN');
+
+            // Mettez à jour le nombre total de pixels dans le texte
+            const legosCountText = `Legos 1x1: ${totalPixels}`;
+            processedImageLegosCountElement.innerText = legosCountText;
+        } else {
+            // Réinitialisez le texte si aucune image n'a été générée
+            processedImageLegosCountElement.innerText = '';
+        }
+    }
+
+    function updateImageAndTable() {
+        const imageUpload = document.getElementById('imageUpload');
+        const originalImage = document.getElementById('originalImage');
+
+        // Lire l'image sélectionnée
+        if (imageUpload.files.length > 0) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+
+                img.onload = function () {
+                    // Afficher l'image originale
+                    originalImage.src = img.src;
+
+                    // Mettez à jour les dimensions de l'image et la taille
+                    updateImageDimensions();
+                    updateImageSize();
+                };
+            };
+
+            reader.readAsDataURL(imageUpload.files[0]);
+        } else {
+            // Réinitialisez l'image et le tableau si aucun fichier n'est sélectionné
+            originalImage.src = '';
+            imageDimensionsElement.innerText = '';
+            imageSizeElement.innerText = '';
+        }
+    }
+
 </script>
 
 </body>
