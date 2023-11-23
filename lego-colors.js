@@ -33,7 +33,7 @@ const legoColors = {
     'E7F2A7': {name: 'Yellowish Green', textColor: 'black'},
     'DFE000': {name: 'Medium Lime', textColor: 'black'},
     'C4E000': {name: 'Lime', textColor: 'black'},
-    'ABA953': {name: 'Olive Green', textColor: 'black'},
+    'ABA953': {name: 'Olive Green', textColor: 'white'},
     '2E5543': {name: 'Dark Green', textColor: 'white'},
     '00923D': {name: 'Green', textColor: 'white'},
     '10CB31': {name: 'Bright Green', textColor: 'white'},
