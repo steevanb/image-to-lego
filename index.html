@@ -302,8 +302,6 @@ Almost nothing has been changed by me, a human.
                                 }
                             }
 
-                            updateImageDimensions();
-                            updateImageSize();
                             updateProcessedImageDimensions();
                             updateProcessedImageLegosCount();
 
@@ -451,23 +449,29 @@ Almost nothing has been changed by me, a human.
         const processedImageDimensionsElement = document.getElementById('processsedImageDimensions');
 
         if (processedImage.src) {
-            // Calculer et afficher la largeur et la hauteur de l'image générée
-            let processedImageWidth = processedImage.naturalWidth * 0.8; // Convertir de pixels à cm
-            let processedImageWidthUnit = 'cm';
-            if (processedImageWidth > 100) {
-                processedImageWidth = processedImageWidth / 100;
-                processedImageWidthUnit = 'm';
-            }
+            if (processedImage.complete) {
+                // Calculer et afficher la largeur et la hauteur de l'image générée
+                let processedImageWidth = processedImage.naturalWidth * 0.8; // Convertir de pixels à cm
+                let processedImageWidthUnit = 'cm';
+                if (processedImageWidth > 100) {
+                    processedImageWidth = processedImageWidth / 100;
+                    processedImageWidthUnit = 'm';
+                }
 
-            let processedImageHeight = processedImage.naturalHeight * 0.8; // Convertir de pixels à cm
-            let processedImageHeightUnit = 'm';
-            if (processedImageHeight > 100) {
-                processedImageHeight = processedImageHeight / 100;
-                processedImageHeightUnit = 'm';
-            }
+                let processedImageHeight = processedImage.naturalHeight * 0.8; // Convertir de pixels à cm
+                let processedImageHeightUnit = 'm';
+                if (processedImageHeight > 100) {
+                    processedImageHeight = processedImageHeight / 100;
+                    processedImageHeightUnit = 'm';
+                }
 
-            const dimensions = `Dimensions: ${processedImageWidth.toFixed(2)}${processedImageWidthUnit} x ${processedImageHeight.toFixed(2)}${processedImageHeightUnit}`;
-            processedImageDimensionsElement.innerText = dimensions;
+                const dimensions = `Dimensions: ${processedImageWidth.toFixed(2)}${processedImageWidthUnit} x ${processedImageHeight.toFixed(2)}${processedImageHeightUnit}`;
+                processedImageDimensionsElement.innerText = dimensions;
+            } else {
+                setTimeout(function () {
+                    updateProcessedImageDimensions();
+                }, 100);
+            }
         } else {
             // Réinitialisez le texte si aucune image n'a été générée
             processedImageDimensionsElement.innerText = '';
@@ -479,16 +483,22 @@ Almost nothing has been changed by me, a human.
         const processedImageLegosCountElement = document.getElementById('processsedImageLegosCount');
 
         if (processedImage.src) {
-            // Obtenez les dimensions de l'image traitée
-            const width = processedImage.naturalWidth;
-            const height = processedImage.naturalHeight;
+            if (processedImage.complete) {
+                // Obtenez les dimensions de l'image traitée
+                const width = processedImage.naturalWidth;
+                const height = processedImage.naturalHeight;
 
-            // Calculez le nombre total de pixels dans l'image
-            const totalPixels = (width * height).toLocaleString('en-EN');
+                // Calculez le nombre total de pixels dans l'image
+                const totalPixels = (width * height).toLocaleString('en-EN');
 
-            // Mettez à jour le nombre total de pixels dans le texte
-            const legosCountText = `Legos 1x1: ${totalPixels}`;
-            processedImageLegosCountElement.innerText = legosCountText;
+                // Mettez à jour le nombre total de pixels dans le texte
+                const legosCountText = `Legos 1x1: ${totalPixels}`;
+                processedImageLegosCountElement.innerText = legosCountText;
+            } else {
+                setTimeout(function () {
+                    updateProcessedImageLegosCount();
+                }, 100);
+            }
         } else {
             // Réinitialisez le texte si aucune image n'a été générée
             processedImageLegosCountElement.innerText = '';
