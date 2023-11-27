@@ -61,7 +61,13 @@ Almost nothing has been changed by me, a human.
             </div>
 
             <div class="container mt-4">
-                <button class="btn btn-success w-100" onclick="processImage()">Process image</button>
+                <button id="processImageButton" class="btn btn-success w-100" onclick="processImage()">
+                    <span id="processImageText">Process image</span>
+                    <div class="spinner-border spinner-border-sm ms-2" role="status" id="processingSpinner" style="display: none;">
+                        <span class="visually-hidden">Processing...</span>
+                    </div>
+                    <span class="ms-2" id="completionPercentage" style="display: none;">0%</span>
+                </button>
             </div>
         </div>
     </div>
@@ -197,6 +203,16 @@ Almost nothing has been changed by me, a human.
     });
 
     function processImage() {
+        // Afficher le spinner et masquer le texte du bouton
+        document.getElementById('processingSpinner').style.display = 'inline-block';
+        document.getElementById('processImageText').style.display = 'none';
+        document.getElementById('processedImageSection').classList.add('d-none');
+
+        // Afficher le pourcentage de complétion et masquer le texte du bouton
+        const completionPercentage = document.getElementById('completionPercentage');
+        completionPercentage.style.display = 'inline-block';
+        completionPercentage.innerText = '0%';
+
         const imageUpload = document.getElementById('imageUpload');
         const originalImage = document.getElementById('originalImage');
         const processedImage = document.getElementById('processedImage');
@@ -227,59 +243,76 @@ Almost nothing has been changed by me, a human.
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0, img.width, img.height);
 
+                    // Créez un worker
+                    const worker = new Worker('imageProcessWorker.js');
+
+                    // Envoyez les données nécessaires au worker
                     const imageData = ctx.getImageData(0, 0, img.width, img.height);
-                    const pixels = imageData.data;
+                    const selectedColors = Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
+                        .filter(checkbox => checkbox.checked)
+                        .map(checkbox => checkbox.value);
 
-                    for (let i = 0; i < pixels.length; i += 4) {
-                        const closestColor = findClosestColor(pixels[i], pixels[i + 1], pixels[i + 2], selectedColors);
-                        pixels[i] = closestColor.red;
-                        pixels[i + 1] = closestColor.green;
-                        pixels[i + 2] = closestColor.blue;
-                    }
+                    worker.postMessage({
+                        imageData: imageData,
+                        selectedColors: selectedColors
+                    });
 
-                    ctx.putImageData(imageData, 0, 0);
-                    processedImage.src = canvas.toDataURL('image/png');
-
-                    // Show the image display section
-                    imageDisplaySection.classList.remove('d-none');
-                    document.getElementById('processedImageSection').classList.remove('d-none');
-
-                    // Store the used colors in an array
-                    const usedColors = [];
-
-                    for (let i = 0; i < pixels.length; i += 4) {
-                        const closestColor = findClosestColor(pixels[i], pixels[i + 1], pixels[i + 2], selectedColors);
-                        pixels[i] = closestColor.red;
-                        pixels[i + 1] = closestColor.green;
-                        pixels[i + 2] = closestColor.blue;
-
-                        // Ajouter la couleur la plus proche utilisée à la liste
-                        const usedColor = rgbToHex(closestColor.red, closestColor.green, closestColor.blue);
-                        if (!usedColors.includes(usedColor)) {
-                            usedColors.push(usedColor);
-                        }
-                    }
-
-                    updateCheckboxes(usedColors, imageData);
-
-                    // Afficher le nombre de pixels de la couleur du background dans le label
-                    const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
-                    for (const checkbox of checkboxes) {
-                        const color = checkbox.value;
-                        const label = checkbox.parentElement; // Récupérer l'élément parent, c'est-à-dire le label
-
-                        if (usedColors.includes(color)) {
-                            const pixelCount = countPixels(imageData, hexToRgb(color)).toLocaleString('en-EN');
-                            label.lastElementChild.innerText = ` (${pixelCount})`;
+                    // Gérez la réponse du worker
+                    worker.onmessage = function(e) {
+                        if (e.data.percentage !== undefined) {
+                            // Mettez à jour le pourcentage de complétion
+                            completionPercentage.innerText = e.data.percentage.toFixed(0) + '%';
                         } else {
-                            label.lastElementChild.innerText = '';
+                            // Use the processed image data directly
+                            const processedImageData = e.data.processedImageData;
+                            ctx.putImageData(processedImageData, 0, 0);
+                            processedImage.src = canvas.toDataURL('image/png');
+
+                            // Show the image display section
+                            imageDisplaySection.classList.remove('d-none');
+                            document.getElementById('processedImageSection').classList.remove('d-none');
+
+                            // Store the used colors in an array
+                            const usedColors = [];
+
+                            const pixels = imageData.data;
+
+                            for (let i = 0; i < pixels.length; i += 4) {
+                                const closestColor = findClosestColor(pixels[i], pixels[i + 1], pixels[i + 2], selectedColors);
+                                // Ajouter la couleur la plus proche utilisée à la liste
+                                const usedColor = rgbToHex(closestColor.red, closestColor.green, closestColor.blue);
+                                if (!usedColors.includes(usedColor)) {
+                                    usedColors.push(usedColor);
+                                }
+                            }
+
+                            updateCheckboxes(usedColors, imageData);
+
+                            // Afficher le nombre de pixels de la couleur du background dans le label
+                            const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
+                            for (const checkbox of checkboxes) {
+                                const color = checkbox.value;
+                                const label = checkbox.parentElement; // Récupérer l'élément parent, c'est-à-dire le label
+
+                                if (usedColors.includes(color)) {
+                                    const pixelCount = countPixels(imageData, hexToRgb(color)).toLocaleString('en-EN');
+                                    label.lastElementChild.innerText = ` (${pixelCount})`;
+                                } else {
+                                    label.lastElementChild.innerText = '';
+                                }
+                            }
+
+                            updateImageDimensions();
+                            updateImageSize();
+                            updateProcessedImageDimensions();
+                            updateProcessedImageLegosCount();
+
+                            // Cacher le spinner et afficher le texte du bouton après le traitement de l'image
+                            document.getElementById('processingSpinner').style.display = 'none';
+                            document.getElementById('processImageText').style.display = 'inline-block';
+                            completionPercentage.style.display = 'none';
                         }
                     }
-
-                    updateImageDimensions();
-                    updateImageSize();
-                    updateProcessedImageDimensions();
-                    updateProcessedImageLegosCount();
                 };
             };
 
@@ -315,17 +348,11 @@ Almost nothing has been changed by me, a human.
     }
 
     function hexToRgb(hex) {
-        // Remove the hash sign if present
         hex = hex.replace(/^#/, '');
-
-        // Parse the hex values
         const bigint = parseInt(hex, 16);
-
-        // Extract RGB values
         const red = (bigint >> 16) & 255;
         const green = (bigint >> 8) & 255;
         const blue = bigint & 255;
-
         return [red, green, blue];
     }
 
