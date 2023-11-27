@@ -275,7 +275,7 @@ Almost nothing has been changed by me, a human.
                             // Store the used colors in an array
                             const usedColors = [];
 
-                            const pixels = imageData.data;
+                            const pixels = processedImageData.data;
 
                             for (let i = 0; i < pixels.length; i += 4) {
                                 const closestColor = findClosestColor(pixels[i], pixels[i + 1], pixels[i + 2], selectedColors);
@@ -286,7 +286,7 @@ Almost nothing has been changed by me, a human.
                                 }
                             }
 
-                            updateCheckboxes(usedColors, imageData);
+                            updateCheckboxes(usedColors, processedImageData);
 
                             // Afficher le nombre de pixels de la couleur du background dans le label
                             const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
@@ -295,7 +295,7 @@ Almost nothing has been changed by me, a human.
                                 const label = checkbox.parentElement; // Récupérer l'élément parent, c'est-à-dire le label
 
                                 if (usedColors.includes(color)) {
-                                    const pixelCount = countPixels(imageData, hexToRgb(color)).toLocaleString('en-EN');
+                                    const pixelCount = countPixels(processedImageData, hexToRgb(color)).toLocaleString('en-EN');
                                     label.lastElementChild.innerText = ` (${pixelCount})`;
                                 } else {
                                     label.lastElementChild.innerText = '';
