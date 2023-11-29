@@ -11,6 +11,8 @@ Almost nothing has been changed by me, a human.
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" crossorigin="anonymous">
+
     <style>
         body {
             cursor: default;
@@ -25,50 +27,68 @@ Almost nothing has been changed by me, a human.
         table {
             border-radius: 0; /* Supprime les bords arrondis pour ces éléments */
         }
+
+        .card-main {
+            border: 1px solid rgba(0,0,0,.125);
+            padding: 0.8rem 0;
+        }
     </style>
 </head>
 <body>
 
 <!-- Section 1: Image Upload -->
 <div class="container mt-3">
-    <div class="card bg-light">
-        <div class="card-body">
-            <div class="container">
-                <h3 class="mb-4">Image processor</h3>
-                <div class="mb-3">
-                    <input type="file" class="form-control" id="imageUpload">
-                </div>
-            </div>
+    <div class="row bg-light card-main">
+        <div class="col-md-4">
+            <h3>Image processor</h3>
+            <input type="file" class="form-control" id="imageUpload">
 
-            <!-- Section 2: Lego Colors Selection -->
-            <div class="container mt-3">
-                <h3>Select Lego colors</h3>
-                <div class="mb-2">
-                    <label>
-                        <button id="checkAll" class="btn btn-primary"> Check All</button>
-                    </label>
-                    <label>
-                        <button id="uncheckAll" class="btn btn-primary"> Uncheck All</button>
-                    </label>
-                </div>
-                <div id="legoColorsCheckboxes">
-                    <table class="w-100">
-                        <tbody id="checkboxRow">
-                        <tr></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
+            <div class="mt-4">
+                <h3>Options</h3>
+                <div class="row">
+                    <div class="col-md-4">Colors</div>
+                    <div class="col-md-8">
+                        <label>
+                            <input type="radio" id="normalRadio" name="colorsType" value="normal" checked>
+                            Normal
+                        </label>
 
-            <div class="container mt-4">
-                <button id="processImageButton" class="btn btn-success w-100" onclick="processImage()">
-                    <span id="processImageText">Process image</span>
-                    <div class="spinner-border spinner-border-sm ms-2" role="status" id="processingSpinner" style="display: none;">
-                        <span class="visually-hidden">Processing...</span>
+                        <label class="ms-2">
+                            <input type="radio" id="lightestRadio" name="colorsType" value="lightest" checked>
+                            Lightest <i class="fas fa-info-circle text-info" title="When selected, all Lego colors will be selected."></i>
+                        </label>
                     </div>
-                    <span class="ms-2" id="completionPercentage" style="display: none;">0%</span>
-                </button>
+                </div>
             </div>
+        </div>
+
+        <div class="col-md-8">
+            <h3>Select Lego colors</h3>
+            <div class="mb-2">
+                <label>
+                    <button id="checkAll" class="btn btn-primary"> Check All</button>
+                </label>
+                <label>
+                    <button id="uncheckAll" class="btn btn-primary"> Uncheck All</button>
+                </label>
+            </div>
+            <div id="legoColorsCheckboxes">
+                <table class="w-100">
+                    <tbody id="checkboxRow">
+                    <tr></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-md-12 mt-3">
+            <button id="processImageButton" class="btn btn-success w-100" onclick="processImage()">
+                <span id="processImageText">Process image</span>
+                <div class="spinner-border spinner-border-sm ms-2" role="status" id="processingSpinner" style="display: none;">
+                    <span class="visually-hidden">Processing...</span>
+                </div>
+                <span class="ms-2" id="completionPercentage" style="display: none;">0%</span>
+            </button>
         </div>
     </div>
 </div>
@@ -136,7 +156,7 @@ Almost nothing has been changed by me, a human.
     let cellCounter = 0;
 
     for (const color in legoColors) {
-        if (cellCounter === 6) {
+        if (cellCounter === 4) {
             cellCounter = 0;
             checkboxRow.appendChild(document.createElement('tr'));
         }
@@ -175,10 +195,7 @@ Almost nothing has been changed by me, a human.
 
     // Gérer le clic sur la case à cocher "Check All"
     document.getElementById('checkAll').addEventListener('click', function () {
-        const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
-        for (const checkbox of checkboxes) {
-            checkbox.checked = true;
-        }
+        checkAllCheckboxes();
     });
 
     // Gérer le clic sur la case à cocher "Uncheck All"
@@ -187,6 +204,14 @@ Almost nothing has been changed by me, a human.
         for (const checkbox of checkboxes) {
             checkbox.checked = false;
         }
+    });
+
+    document.getElementById('normalRadio').addEventListener('change', function () {
+        checkAllCheckboxes();
+
+    });
+    document.getElementById('lightestRadio').addEventListener('change', function () {
+        checkAllCheckboxes();
     });
 
     // Récupérez l'élément d'entrée de fichier
@@ -203,28 +228,32 @@ Almost nothing has been changed by me, a human.
     });
 
     function processImage() {
-        // Afficher le spinner et masquer le texte du bouton
-        document.getElementById('processingSpinner').style.display = 'inline-block';
-        document.getElementById('processImageText').style.display = 'none';
-        document.getElementById('processedImageSection').classList.add('d-none');
-
-        // Afficher le pourcentage de complétion et masquer le texte du bouton
-        const completionPercentage = document.getElementById('completionPercentage');
-        completionPercentage.style.display = 'inline-block';
-        completionPercentage.innerText = '0%';
-
-        const imageUpload = document.getElementById('imageUpload');
-        const originalImage = document.getElementById('originalImage');
-        const processedImage = document.getElementById('processedImage');
-        const imageDisplaySection = document.getElementById('imageDisplaySection');
-
-        // Get selected Lego colors
-        const selectedColors = Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.value);
-
         // Check if an image is selected
         if (imageUpload.files.length > 0) {
+            if (document.querySelector('input[name="colorsType"]:checked').value === 'lightest') {
+                checkAllCheckboxes();
+            }
+
+            // Afficher le spinner et masquer le texte du bouton
+            document.getElementById('processingSpinner').style.display = 'inline-block';
+            document.getElementById('processImageText').style.display = 'none';
+            document.getElementById('processedImageSection').classList.add('d-none');
+
+            // Afficher le pourcentage de complétion et masquer le texte du bouton
+            const completionPercentage = document.getElementById('completionPercentage');
+            completionPercentage.style.display = 'inline-block';
+            completionPercentage.innerText = '0%';
+
+            const imageUpload = document.getElementById('imageUpload');
+            const originalImage = document.getElementById('originalImage');
+            const processedImage = document.getElementById('processedImage');
+            const imageDisplaySection = document.getElementById('imageDisplaySection');
+
+            // Get selected Lego colors
+            const selectedColors = Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+
             const reader = new FileReader();
 
             // Read the selected image
@@ -254,7 +283,8 @@ Almost nothing has been changed by me, a human.
 
                     worker.postMessage({
                         imageData: imageData,
-                        selectedColors: selectedColors
+                        selectedColors: selectedColors,
+                        colorsType: document.querySelector('input[name="colorsType"]:checked').value
                     });
 
                     // Gérez la réponse du worker
@@ -278,9 +308,7 @@ Almost nothing has been changed by me, a human.
                             const pixels = processedImageData.data;
 
                             for (let i = 0; i < pixels.length; i += 4) {
-                                const closestColor = findClosestColor(pixels[i], pixels[i + 1], pixels[i + 2], selectedColors);
-                                // Ajouter la couleur la plus proche utilisée à la liste
-                                const usedColor = rgbToHex(closestColor.red, closestColor.green, closestColor.blue);
+                                const usedColor = rgbToHex(pixels[i], pixels[i + 1], pixels[i + 2]);
                                 if (!usedColors.includes(usedColor)) {
                                     usedColors.push(usedColor);
                                 }
@@ -318,31 +346,6 @@ Almost nothing has been changed by me, a human.
         } else {
             alert('Please select an image.');
         }
-    }
-
-    function findClosestColor(red, green, blue, selectedColors) {
-        let closestColor = { distance: Infinity };
-
-        for (const color of selectedColors) {
-            const [targetRed, targetGreen, targetBlue] = hexToRgb(color);
-
-            const distance = Math.sqrt(
-                Math.pow(targetRed - red, 2) +
-                Math.pow(targetGreen - green, 2) +
-                Math.pow(targetBlue - blue, 2)
-            );
-
-            if (distance < closestColor.distance) {
-                closestColor = {
-                    distance: distance,
-                    red: targetRed,
-                    green: targetGreen,
-                    blue: targetBlue,
-                };
-            }
-        }
-
-        return closestColor;
     }
 
     function hexToRgb(hex) {
