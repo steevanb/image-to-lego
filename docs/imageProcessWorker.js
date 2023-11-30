@@ -26,7 +26,7 @@ function findClosestColor(red, green, blue, selectedColors, colorsType) {
     };
 
     for (const color of selectedColors) {
-        let [targetRed, targetGreen, targetBlue] = hexToRgb(color);
+        const [targetRed, targetGreen, targetBlue] = hexToRgb(color);
 
         const distance = Math.sqrt(
             Math.pow(targetRed - red, 2) +
