@@ -1,0 +1,49 @@
+body {
+    cursor: default;
+}
+
+.card,
+img,
+button,
+.btn,
+input[type="file"],
+input[type="checkbox"],
+table {
+    border-radius: 0;
+}
+
+.card-main {
+    border: 1px solid rgba(0,0,0,.125);
+    padding: 0.8rem 0;
+}
+
+.nav-link.active {
+    background-color: white;
+}
+
+.bg-lego {
+    background-color: #FFCF00;
+}
+
+.navbar a {
+    color: black !important;
+}
+
+.bg-light {
+    background-color: #F2F2F2 !important;
+}
+
+.btn-primary {
+    background-color: #006DB7;
+}
+
+.table-primary {
+    background-color: #006DB7;
+}
+
+.table.table-header {
+    > :not(caption) > * > * {
+        background-color: #5c95bc;
+        color: white;
+    }
+}
