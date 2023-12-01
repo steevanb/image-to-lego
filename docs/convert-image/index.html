@@ -45,7 +45,31 @@ Almost nothing has been changed by me, a human.
             <div class="row bg-light card-main">
                 <div class="col-md-4">
                     <h1>Image</h1>
-                    <input type="file" class="form-control" id="imageUpload">
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h2>Examples</h2>
+                            Click on an image to select it.
+                        </div>
+                    </div>
+                    <div class="row pt-1">
+                        <div class="col-4 pe-1">
+                            <img src="test-micky.png" class="img-thumbnail cursor-pointer" onclick="setOriginalImage(this)">
+                        </div>
+                        <div class="col-4 ps-1 pe-1">
+                            <img src="test-tigre.png" class="img-thumbnail cursor-pointer" onclick="setOriginalImage(this)">
+                        </div>
+                        <div class="col-4 ps-1">
+                            <img src="test-effeil-tower.png" class="img-thumbnail cursor-pointer" onclick="setOriginalImage(this)">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <h2 class="pt-2">Send your file</h2>
+                            <input type="file" class="form-control mt-2" id="imageUpload">
+                        </div>
+                    </div>
 
                     <div class="mt-4">
                         <h1>Options</h1>
@@ -108,17 +132,17 @@ Almost nothing has been changed by me, a human.
                         <div class="card-body">
                             <table class="table table-header" style="table-layout: fixed;">
                                 <tbody>
-                                <tr>
-                                    <td class="text-center">
-                                        <p class="mb-0">Original image</p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p id="imageDimensions" class="mb-0"></p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p id="imageSize" class="mb-0"></p>
-                                    </td>
-                                </tr>
+                                    <tr>
+                                        <td class="text-center">
+                                            <p class="mb-0">Original image</p>
+                                        </td>
+                                        <td class="text-center">
+                                            <p id="imageDimensions" class="mb-0"></p>
+                                        </td>
+                                        <td class="text-center">
+                                            <p id="imageSize" class="mb-0"></p>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                             <img id="originalImage" class="img-fluid mx-auto d-block" alt="Original Image">
@@ -190,17 +214,16 @@ Almost nothing has been changed by me, a human.
 
             // Attachez un événement au changement de l'entrée de fichier pour cocher toutes les cases
             imageUpload.addEventListener('change', function() {
-                checkAllCheckboxes();
+                setOriginalImage();
+            });
+
+            document.getElementById('originalImage').addEventListener('load', function() {
                 updateImageDimensions();
                 updateImageSize();
-                updateImageAndTable();
-                document.getElementById('imageDisplaySection').classList.remove('d-none');
-                hideProcessedImageSection();
             });
 
             function processImage() {
-                // Check if an image is selected
-                if (imageUpload.files.length > 0) {
+                if (document.getElementById('originalImage').src.length > 0) {
                     if (document.querySelector('input[name="colorsType"]:checked').value === 'lightest') {
                         checkAllCheckboxes();
                     }
@@ -216,9 +239,7 @@ Almost nothing has been changed by me, a human.
                     completionPercentage.innerText = '0%';
 
                     const imageUpload = document.getElementById('imageUpload');
-                    const originalImage = document.getElementById('originalImage');
                     const processedImage = document.getElementById('processedImage');
-                    const imageDisplaySection = document.getElementById('imageDisplaySection');
 
                     // Get selected Lego colors
                     const selectedColors = Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
@@ -233,9 +254,6 @@ Almost nothing has been changed by me, a human.
                         img.src = e.target.result;
 
                         img.onload = function () {
-                            // Display original image
-                            originalImage.src = img.src;
-
                             // Process the image and display the processed image
                             const canvas = document.createElement('canvas');
                             const ctx = canvas.getContext('2d');
@@ -258,7 +276,6 @@ Almost nothing has been changed by me, a human.
                                 colorsType: document.querySelector('input[name="colorsType"]:checked').value
                             });
 
-                            // Gérez la réponse du worker
                             worker.onmessage = function(e) {
                                 if (e.data.percentage !== undefined) {
                                     // Mettez à jour le pourcentage de complétion
@@ -269,8 +286,6 @@ Almost nothing has been changed by me, a human.
                                     ctx.putImageData(processedImageData, 0, 0);
                                     processedImage.src = canvas.toDataURL('image/png');
 
-                                    // Show the image display section
-                                    imageDisplaySection.classList.remove('d-none');
                                     showProcessedImageSection();
 
                                     // Store the used colors in an array
@@ -313,10 +328,27 @@ Almost nothing has been changed by me, a human.
                         };
                     };
 
-                    reader.readAsDataURL(imageUpload.files[0]);
+                    const img = document.getElementById('originalImage');
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    const imageDataURL = canvas.toDataURL('image/png');
+                    reader.readAsDataURL(dataURItoBlob(imageDataURL));
                 } else {
                     alert('Please select an image.');
                 }
+            }
+
+            function dataURItoBlob(dataURI) {
+                const byteString = atob(dataURI.split(',')[1]);
+                const ab = new ArrayBuffer(byteString.length);
+                const ia = new Uint8Array(ab);
+                for (let i = 0; i < byteString.length; i++) {
+                    ia[i] = byteString.charCodeAt(i);
+                }
+                return new Blob([ab], { type: 'image/png' });
             }
 
             function hexToRgb(hex) {
@@ -366,55 +398,42 @@ Almost nothing has been changed by me, a human.
             function checkAllCheckboxes() {
                 const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
                 for (const checkbox of checkboxes) {
-                    console.log(checkbox.parentElement.parentElement.classList);
                     checkbox.checked = checkbox.parentElement.parentElement.classList.contains('d-none') === false;
                 }
             }
 
             // Ajoutez cette fonction pour calculer les dimensions de l'image
             function updateImageDimensions() {
-                const imageUpload = document.getElementById('imageUpload');
+                const originalImage = document.getElementById('originalImage');
                 const imageDimensionsElement = document.getElementById('imageDimensions');
 
-                if (imageUpload.files.length > 0) {
-                    const reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        const img = new Image();
-                        img.src = e.target.result;
-
-                        img.onload = function () {
-                            const dimensions = `Dimensions: ${img.width} x ${img.height} pixels`;
-                            imageDimensionsElement.innerText = dimensions;
-                        };
-                    };
-
-                    reader.readAsDataURL(imageUpload.files[0]);
+                if (originalImage.src.length > 0) {
+                    imageDimensionsElement.innerText = `Dimensions: ${originalImage.naturalWidth} x ${originalImage.naturalHeight} pixels`;
                 } else {
-                    // Réinitialisez le texte si aucun fichier n'est sélectionné
                     imageDimensionsElement.innerText = '';
                 }
             }
 
-            // Ajoutez cette fonction pour mettre à jour la taille de l'image en KB ou MB
             function updateImageSize() {
-                const imageUpload = document.getElementById('imageUpload');
+                const originalImage = document.getElementById('originalImage');
                 const imageSizeElement = document.getElementById('imageSize');
 
-                if (imageUpload.files.length > 0) {
-                    const fileSizeInKB = imageUpload.files[0].size / 1024;
-                    let fileSize;
+                if (originalImage.src.length > 0) {
+                    fetch(originalImage.src)
+                        .then(response => response.blob())
+                        .then(blob => {
+                            let fileSizeInKB = blob.size / 1024;
+                            let fileSize;
 
-                    if (fileSizeInKB < 1024) {
-                        fileSize = fileSizeInKB.toFixed(2) + ' KB';
-                    } else {
-                        fileSize = (fileSizeInKB / 1024).toFixed(2) + ' MB';
-                    }
+                            if (fileSizeInKB < 1024) {
+                                fileSize = fileSizeInKB.toFixed(2) + ' KB';
+                            } else {
+                                fileSize = (fileSizeInKB / 1024).toFixed(2) + ' MB';
+                            }
 
-                    // Ajoutez "Size: " devant la taille de l'image
-                    imageSizeElement.innerText = 'Size: ' + fileSize;
+                            imageSizeElement.innerText = 'Size: ' + fileSize;
+                        });
                 } else {
-                    // Réinitialisez le texte si aucun fichier n'est sélectionné
                     imageSizeElement.innerText = '';
                 }
             }
@@ -461,37 +480,6 @@ Almost nothing has been changed by me, a human.
                 } else {
                     // Réinitialisez le texte si aucune image n'a été générée
                     processedImageLegosCountElement.innerText = '';
-                }
-            }
-
-            function updateImageAndTable() {
-                const imageUpload = document.getElementById('imageUpload');
-                const originalImage = document.getElementById('originalImage');
-
-                // Lire l'image sélectionnée
-                if (imageUpload.files.length > 0) {
-                    const reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        const img = new Image();
-                        img.src = e.target.result;
-
-                        img.onload = function () {
-                            // Afficher l'image originale
-                            originalImage.src = img.src;
-
-                            // Mettez à jour les dimensions de l'image et la taille
-                            updateImageDimensions();
-                            updateImageSize();
-                        };
-                    };
-
-                    reader.readAsDataURL(imageUpload.files[0]);
-                } else {
-                    // Réinitialisez l'image et le tableau si aucun fichier n'est sélectionné
-                    originalImage.src = '';
-                    imageDimensionsElement.innerText = '';
-                    imageSizeElement.innerText = '';
                 }
             }
 
@@ -595,6 +583,42 @@ Almost nothing has been changed by me, a human.
 
             function showProcessedImageSection() {
                 document.getElementById('processedImageSection').classList.remove('d-none');
+            }
+
+            function setOriginalImage(imgElement = null) {
+                const originalImage = document.getElementById('originalImage');
+                const imageUpload = document.getElementById('imageUpload');
+
+                if (imgElement === null) {
+                    if (imageUpload.files.length > 0) {
+                        const reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            originalImage.src = e.target.result;
+
+                            checkAllCheckboxes();
+                            showImageDisplaySection();
+                            hideProcessedImageSection();
+                        };
+
+                        reader.readAsDataURL(imageUpload.files[0]);
+                    }
+                } else {
+                    originalImage.src = imgElement.src;
+                    imageUpload.value = '';
+
+                    checkAllCheckboxes();
+                    showImageDisplaySection();
+                    hideProcessedImageSection();
+                }
+            }
+
+            function showImageDisplaySection() {
+                document.getElementById('imageDisplaySection').classList.remove('d-none');
+            }
+
+            function hideImageDisplaySection() {
+                document.getElementById('imageDisplaySection').classList.add('d-none');
             }
         </script>
 
