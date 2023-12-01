@@ -33,6 +33,10 @@ table {
     background-color: #F2F2F2 !important;
 }
 
+.bg-medium {
+    background-color: #dedddd !important;
+}
+
 .btn-primary {
     background-color: #006DB7;
 }
@@ -46,4 +50,18 @@ table {
         background-color: #5c95bc;
         color: white;
     }
+}
+
+h1 {
+    border-bottom: 2px solid #D5841DFF;
+    font-size: 2rem;
+    color: #D5841DFF;
+}
+
+.card-body {
+    padding-top: 10px;
+}
+
+h2 {
+    font-size: 1.7rem;
 }

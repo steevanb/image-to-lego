@@ -27,576 +27,82 @@ Almost nothing has been changed by me, a human.
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item ms-3">
-                            <a class="nav-link ps-2 active" href="#">Convert image</a>
+                            <a class="nav-link ps-2 active" href="#">Home</a>
                         </li>
                         <li class="nav-item ms-3">
                             <a class="nav-link ps-2" href="calculate-dimensions">Calculate dimensions</a>
+                        </li>
+                        <li class="nav-item ms-3">
+                            <a class="nav-link ps-2" href="convert-image">Convert image</a>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
-        <!-- Section 1: Image Upload -->
         <div class="container mt-3">
-            <div class="row bg-light card-main">
-                <div class="col-md-4">
-                    <h3>Image</h3>
-                    <input type="file" class="form-control" id="imageUpload">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card bg-medium mb-3">
+                        <div class="card-body">
+                            <h1>Welcome</h1>
+                            Welcome to Image to Lego mosaic, a tool that converts images to Lego mosaics.
 
-                    <div class="mt-4">
-                        <h3>Options</h3>
-                        <div class="row">
-                            <div class="col-md-4">Colors</div>
-                            <div class="col-md-8">
-                                <label>
-                                    <input type="radio" id="normalRadio" name="colorsType" value="normal" checked>
-                                    Normal
-                                </label>
-                                <br>
-
-                                <label>
-                                    <input type="radio" id="lightestRadio" name="colorsType" value="lightest">
-                                    Lightest <i class="fas fa-info-circle text-info" title="When selected, all Lego colors will be selected."></i>
-                                </label>
-                                <br>
-
-                                <label>
-                                    <input type="radio" id="blackAndWhiteRadio" name="colorsType" value="blackAndWhite">
-                                    Black and White
-                                </label>
+                            <h1 class="mt-3">Example</h1>
+                            <div class="row">
+                                <div class="col-4 text-center">
+                                    <h2>Original</h2>
+                                    <img src="home/micky-original.png" title="Yes, that's my dog">
+                                </div>
+                                <div class="col-4 text-center">
+                                    <h2>Converted</h2>
+                                    <img src="home/micky-lego.png">
+                                </div>
+                                <div class="col-4 text-center">
+                                    <h2>Converted (black & white)</h2>
+                                    <img src="home/micky-lego-black-and-white.png">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="col-md-8">
-                    <div class="row">
-                        <h3>Select Lego colors</h3>
-                        <div class="mb-2">
-                            <label>
-                                <button id="checkAll" class="btn btn-primary"> Check All</button>
-                            </label>
-                            <label>
-                                <button id="uncheckAll" class="btn btn-primary"> Uncheck All</button>
-                            </label>
-                        </div>
-                    </div>
-                    <div id="legoColorsCheckboxes" class="row"></div>
-                </div>
-
-                <div class="col-md-12 mt-3">
-                    <button id="processImageButton" class="btn btn-success w-100" onclick="processImage()">
-                        <span id="processImageText">Process image</span>
-                        <div class="spinner-border spinner-border-sm ms-2" role="status" id="processingSpinner" style="display: none;">
-                            <span class="visually-hidden">Processing...</span>
-                        </div>
-                        <span class="ms-2" id="completionPercentage" style="display: none;">0%</span>
-                    </button>
-                </div>
             </div>
-        </div>
-
-        <!-- Images Display Section -->
-        <div class="container-fluid mt-3 d-none" id="imageDisplaySection">
             <div class="row">
                 <div class="col-md-6">
                     <div class="card bg-light mb-3">
                         <div class="card-body">
-                            <table class="table table-header" style="table-layout: fixed;">
-                                <tbody>
-                                <tr>
-                                    <td class="text-center">
-                                        <p class="mb-0">Original image</p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p id="imageDimensions" class="mb-0"></p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p id="imageSize" class="mb-0"></p>
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <img id="originalImage" class="img-fluid mx-auto d-block" alt="Original Image">
+                            <h1>Step #1</h1>
+                            First you need to <a href="calculate-dimensions">calculate the dimensions</a> of your image and mosaic.
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6" id="processedImageSection">
+                <div class="col-md-6">
                     <div class="card bg-light mb-3">
                         <div class="card-body">
-                            <table class="table table-header" style="table-layout: fixed;">
-                                <tbody>
-                                    <tr>
-                                        <td class="text-center">
-                                            <p class="mb-0">Processed image</p>
-                                        </td>
-                                        <td class="text-center">
-                                            <p id="processsedImageDimensions" class="mb-0"></p>
-                                        </td>
-                                        <td class="text-center">
-                                            <p id="processsedImageLegosCount" class="mb-0"></p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <img id="processedImage" class="img-fluid mx-auto d-block" alt="Processed Image">
-                            <button class="btn btn-success w-100 mt-3" onclick="generateZip()">Download</button>
+                            <h1>Step #2</h1>
+                            When you have your image to transform into a mosaic,
+                            you can <a href="convert-image">convert it to a set of Lego 1x1 bricks</a>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card bg-light mb-3">
+                        <div class="card-body">
+                            <h1>Thanks</h1>
+                            This tool is powered primarily by <a href="https://openai.com/blog/openai-api/" target="_blank">OpenAI's GPT API</a>,
+                            with a small contribution from <a href="https://www.linkedin.com/in/steevan-barboyon-4208abb7/" target="_blank">Steevan BARBOYON</a>.
+                            <br>
+                            It's hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
+                            <br>
+                            You can view <a href="https://github.com/steevanb/image-to-lego" target="_blank">the source code</a> (and participate).
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <script src="lego-colors.js"></script>
-        <script>
-            createColorCheckboxes();
-
-            // Gérer le clic sur la case à cocher "Check All"
-            document.getElementById('checkAll').addEventListener('click', function () {
-                checkAllCheckboxes();
-            });
-
-            // Gérer le clic sur la case à cocher "Uncheck All"
-            document.getElementById('uncheckAll').addEventListener('click', function () {
-                const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
-                for (const checkbox of checkboxes) {
-                    checkbox.checked = false;
-                }
-            });
-
-            document.getElementById('normalRadio').addEventListener('change', function () {
-                hideProcessedImageSection();
-                toggleBlackAndWhiteColors();
-                checkAllCheckboxes();
-
-            });
-            document.getElementById('lightestRadio').addEventListener('change', function () {
-                hideProcessedImageSection();
-                toggleBlackAndWhiteColors();
-                checkAllCheckboxes();
-            });
-            document.getElementById('blackAndWhiteRadio').addEventListener('change', function () {
-                hideProcessedImageSection();
-                toggleBlackAndWhiteColors();
-                checkAllCheckboxes();
-            });
-
-            // Récupérez l'élément d'entrée de fichier
-            const imageUpload = document.getElementById('imageUpload');
-
-            // Attachez un événement au changement de l'entrée de fichier pour cocher toutes les cases
-            imageUpload.addEventListener('change', function() {
-                checkAllCheckboxes();
-                updateImageDimensions();
-                updateImageSize();
-                updateImageAndTable();
-                document.getElementById('imageDisplaySection').classList.remove('d-none');
-                hideProcessedImageSection();
-            });
-
-            function processImage() {
-                // Check if an image is selected
-                if (imageUpload.files.length > 0) {
-                    if (document.querySelector('input[name="colorsType"]:checked').value === 'lightest') {
-                        checkAllCheckboxes();
-                    }
-
-                    // Afficher le spinner et masquer le texte du bouton
-                    document.getElementById('processingSpinner').style.display = 'inline-block';
-                    document.getElementById('processImageText').style.display = 'none';
-                    hideProcessedImageSection();
-
-                    // Afficher le pourcentage de complétion et masquer le texte du bouton
-                    const completionPercentage = document.getElementById('completionPercentage');
-                    completionPercentage.style.display = 'inline-block';
-                    completionPercentage.innerText = '0%';
-
-                    const imageUpload = document.getElementById('imageUpload');
-                    const originalImage = document.getElementById('originalImage');
-                    const processedImage = document.getElementById('processedImage');
-                    const imageDisplaySection = document.getElementById('imageDisplaySection');
-
-                    // Get selected Lego colors
-                    const selectedColors = Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
-                        .filter(checkbox => checkbox.checked)
-                        .map(checkbox => checkbox.value);
-
-                    const reader = new FileReader();
-
-                    // Read the selected image
-                    reader.onload = function (e) {
-                        const img = new Image();
-                        img.src = e.target.result;
-
-                        img.onload = function () {
-                            // Display original image
-                            originalImage.src = img.src;
-
-                            // Process the image and display the processed image
-                            const canvas = document.createElement('canvas');
-                            const ctx = canvas.getContext('2d');
-                            canvas.width = img.width;
-                            canvas.height = img.height;
-                            ctx.drawImage(img, 0, 0, img.width, img.height);
-
-                            // Créez un worker
-                            const worker = new Worker('imageProcessWorker.js');
-
-                            // Envoyez les données nécessaires au worker
-                            const imageData = ctx.getImageData(0, 0, img.width, img.height);
-                            const selectedColors = Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
-                                .filter(checkbox => checkbox.checked)
-                                .map(checkbox => checkbox.value);
-
-                            worker.postMessage({
-                                imageData: imageData,
-                                selectedColors: selectedColors,
-                                colorsType: document.querySelector('input[name="colorsType"]:checked').value
-                            });
-
-                            // Gérez la réponse du worker
-                            worker.onmessage = function(e) {
-                                if (e.data.percentage !== undefined) {
-                                    // Mettez à jour le pourcentage de complétion
-                                    completionPercentage.innerText = e.data.percentage.toFixed(0) + '%';
-                                } else {
-                                    // Use the processed image data directly
-                                    const processedImageData = e.data.processedImageData;
-                                    ctx.putImageData(processedImageData, 0, 0);
-                                    processedImage.src = canvas.toDataURL('image/png');
-
-                                    // Show the image display section
-                                    imageDisplaySection.classList.remove('d-none');
-                                    showProcessedImageSection();
-
-                                    // Store the used colors in an array
-                                    const usedColors = [];
-
-                                    const pixels = processedImageData.data;
-
-                                    for (let i = 0; i < pixels.length; i += 4) {
-                                        const usedColor = rgbToHex(pixels[i], pixels[i + 1], pixels[i + 2]);
-                                        if (!usedColors.includes(usedColor)) {
-                                            usedColors.push(usedColor);
-                                        }
-                                    }
-
-                                    updateCheckboxes(usedColors, processedImageData);
-
-                                    // Afficher le nombre de pixels de la couleur du background dans le label
-                                    const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
-                                    for (const checkbox of checkboxes) {
-                                        const color = checkbox.value;
-                                        const label = checkbox.parentElement; // Récupérer l'élément parent, c'est-à-dire le label
-
-                                        if (usedColors.includes(color)) {
-                                            const pixelCount = countPixels(processedImageData, hexToRgb(color)).toLocaleString('en-EN');
-                                            label.lastElementChild.innerText = ` (${pixelCount})`;
-                                        } else {
-                                            label.lastElementChild.innerText = '';
-                                        }
-                                    }
-
-                                    updateProcessedImageDimensions();
-                                    updateProcessedImageLegosCount();
-
-                                    // Cacher le spinner et afficher le texte du bouton après le traitement de l'image
-                                    document.getElementById('processingSpinner').style.display = 'none';
-                                    document.getElementById('processImageText').style.display = 'inline-block';
-                                    completionPercentage.style.display = 'none';
-                                }
-                            }
-                        };
-                    };
-
-                    reader.readAsDataURL(imageUpload.files[0]);
-                } else {
-                    alert('Please select an image.');
-                }
-            }
-
-            function hexToRgb(hex) {
-                hex = hex.replace(/^#/, '');
-                const bigint = parseInt(hex, 16);
-                const red = (bigint >> 16) & 255;
-                const green = (bigint >> 8) & 255;
-                const blue = bigint & 255;
-                return [red, green, blue];
-            }
-
-            function rgbToHex(red, green, blue) {
-                // Convertir les valeurs RGB en hexadécimal
-                const hex = (red << 16 | green << 8 | blue).toString(16);
-                // Remplir de zéros à gauche si nécessaire
-                const paddedHex = '000000'.slice(0, 6 - hex.length) + hex;
-                // Convertir en majuscules et retourner la chaîne hexadécimale
-                return paddedHex.toUpperCase();
-            }
-
-            function updateCheckboxes(usedColors, imageData) {
-                const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
-
-                for (const checkbox of checkboxes) {
-                    checkbox.checked = usedColors.includes(checkbox.value);
-                    checkbox.dataset.pixelCount = countPixels(imageData, hexToRgb(checkbox.value));
-                }
-            }
-
-            // Ajouter une fonction pour compter le nombre de pixels d'une couleur spécifique dans l'image
-            function countPixels(imageData, targetColor) {
-                const pixels = imageData.data;
-                let count = 0;
-
-                for (let i = 0; i < pixels.length; i += 4) {
-                    const pixelColor = [pixels[i], pixels[i + 1], pixels[i + 2]];
-
-                    if (pixelColor.every((value, index) => value === targetColor[index])) {
-                        count++;
-                    }
-                }
-
-                return count;
-            }
-
-            // Ajoutez une fonction pour cocher toutes les cases
-            function checkAllCheckboxes() {
-                const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
-                for (const checkbox of checkboxes) {
-                    console.log(checkbox.parentElement.parentElement.classList);
-                    checkbox.checked = checkbox.parentElement.parentElement.classList.contains('d-none') === false;
-                }
-            }
-
-            // Ajoutez cette fonction pour calculer les dimensions de l'image
-            function updateImageDimensions() {
-                const imageUpload = document.getElementById('imageUpload');
-                const imageDimensionsElement = document.getElementById('imageDimensions');
-
-                if (imageUpload.files.length > 0) {
-                    const reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        const img = new Image();
-                        img.src = e.target.result;
-
-                        img.onload = function () {
-                            const dimensions = `Dimensions: ${img.width} x ${img.height} pixels`;
-                            imageDimensionsElement.innerText = dimensions;
-                        };
-                    };
-
-                    reader.readAsDataURL(imageUpload.files[0]);
-                } else {
-                    // Réinitialisez le texte si aucun fichier n'est sélectionné
-                    imageDimensionsElement.innerText = '';
-                }
-            }
-
-            // Ajoutez cette fonction pour mettre à jour la taille de l'image en KB ou MB
-            function updateImageSize() {
-                const imageUpload = document.getElementById('imageUpload');
-                const imageSizeElement = document.getElementById('imageSize');
-
-                if (imageUpload.files.length > 0) {
-                    const fileSizeInKB = imageUpload.files[0].size / 1024;
-                    let fileSize;
-
-                    if (fileSizeInKB < 1024) {
-                        fileSize = fileSizeInKB.toFixed(2) + ' KB';
-                    } else {
-                        fileSize = (fileSizeInKB / 1024).toFixed(2) + ' MB';
-                    }
-
-                    // Ajoutez "Size: " devant la taille de l'image
-                    imageSizeElement.innerText = 'Size: ' + fileSize;
-                } else {
-                    // Réinitialisez le texte si aucun fichier n'est sélectionné
-                    imageSizeElement.innerText = '';
-                }
-            }
-
-            function updateProcessedImageDimensions() {
-                const processedImage = document.getElementById('processedImage');
-                const processedImageDimensionsElement = document.getElementById('processsedImageDimensions');
-
-                if (processedImage.src) {
-                    if (processedImage.complete) {
-                        processedImageDimensionsElement.innerText = 'Dimensions: ' + getImageDimensions(processedImage);
-                    } else {
-                        setTimeout(function () {
-                            updateProcessedImageDimensions();
-                        }, 100);
-                    }
-                } else {
-                    // Réinitialisez le texte si aucune image n'a été générée
-                    processedImageDimensionsElement.innerText = '';
-                }
-            }
-
-            function updateProcessedImageLegosCount() {
-                const processedImage = document.getElementById('processedImage');
-                const processedImageLegosCountElement = document.getElementById('processsedImageLegosCount');
-
-                if (processedImage.src) {
-                    if (processedImage.complete) {
-                        // Obtenez les dimensions de l'image traitée
-                        const width = processedImage.naturalWidth;
-                        const height = processedImage.naturalHeight;
-
-                        // Calculez le nombre total de pixels dans l'image
-                        const totalPixels = (width * height).toLocaleString('en-EN');
-
-                        // Mettez à jour le nombre total de pixels dans le texte
-                        const legosCountText = `Legos 1x1: ${totalPixels}`;
-                        processedImageLegosCountElement.innerText = legosCountText;
-                    } else {
-                        setTimeout(function () {
-                            updateProcessedImageLegosCount();
-                        }, 100);
-                    }
-                } else {
-                    // Réinitialisez le texte si aucune image n'a été générée
-                    processedImageLegosCountElement.innerText = '';
-                }
-            }
-
-            function updateImageAndTable() {
-                const imageUpload = document.getElementById('imageUpload');
-                const originalImage = document.getElementById('originalImage');
-
-                // Lire l'image sélectionnée
-                if (imageUpload.files.length > 0) {
-                    const reader = new FileReader();
-
-                    reader.onload = function (e) {
-                        const img = new Image();
-                        img.src = e.target.result;
-
-                        img.onload = function () {
-                            // Afficher l'image originale
-                            originalImage.src = img.src;
-
-                            // Mettez à jour les dimensions de l'image et la taille
-                            updateImageDimensions();
-                            updateImageSize();
-                        };
-                    };
-
-                    reader.readAsDataURL(imageUpload.files[0]);
-                } else {
-                    // Réinitialisez l'image et le tableau si aucun fichier n'est sélectionné
-                    originalImage.src = '';
-                    imageDimensionsElement.innerText = '';
-                    imageSizeElement.innerText = '';
-                }
-            }
-
-            function generateCSV() {
-                const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
-                const selectedColors = Array.from(checkboxes)
-                    .filter(checkbox => checkbox.checked)
-                    .map(checkbox => ({
-                        color: checkbox.value,
-                        name: legoColors[checkbox.value].name,
-                        pixelCount: checkbox.dataset.pixelCount || 0, // Récupérez le nombre de pixels du dataset
-                    }));
-
-                // Créez le contenu CSV
-                let csvContent = 'Color name,Color code,Legos 1x1\n';
-                selectedColors.forEach(color => {
-                    csvContent += `${color.name},${color.color},${color.pixelCount}\n`;
-                });
-
-                return csvContent;
-            }
-
-            function generateZip() {
-                // Créez une instance JSZip
-                const zip = new JSZip();
-
-                zip.file('legos_1x1.csv', generateCSV());
-
-                // Ajoutez l'image générée au zip
-                const processedImage = document.getElementById('processedImage');
-                const imageDataURL = processedImage.src;
-                const imageData = imageDataURL.split(',')[1]; // Ignore the data:image/png;base64, part
-                zip.file('image.png', imageData, { base64: true });
-
-                // Générez le contenu du zip
-                zip.generateAsync({ type: 'blob' }).then(function (blob) {
-                    // Créez un lien pour télécharger le fichier zip
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = 'ImageToLego.zip';
-                    link.click();
-                });
-            }
-
-            function toggleBlackAndWhiteColors() {
-                const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
-                const isBlackAndWhiteMode = document.querySelector('input[name="colorsType"]:checked').value === 'blackAndWhite';
-
-                for (const checkbox of checkboxes) {
-                    const colorData = legoColors[checkbox.value];
-                    const isBlackAndWhite = colorData && colorData.blackAndWhite === true;
-                    const colorDataContainer = checkbox.parentElement.parentElement;
-
-                    if (isBlackAndWhiteMode) {
-                        if (isBlackAndWhite) {
-                            colorDataContainer.classList.remove('d-none');
-                        } else {
-                            colorDataContainer.classList.add('d-none');
-                        }
-                    } else {
-                        colorDataContainer.classList.remove('d-none');
-                    }
-                }
-            }
-
-            function createColorCheckboxes() {
-                const checkboxContainer = document.getElementById('legoColorsCheckboxes');
-                for (const color in legoColors) {
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.value = color;
-                    checkbox.id = color;
-                    checkbox.checked = true; // Default to checked
-                    checkbox.style.marginLeft = '5px';
-                    checkbox.style.marginRight = '3px';
-
-                    // Ajouter le span pour le nombre de pixels
-                    const pixelCountSpan = document.createElement('span');
-                    pixelCountSpan.className = 'pixel-count';
-
-                    const label = document.createElement('label');
-                    label.htmlFor = color;
-                    label.appendChild(checkbox);
-                    label.appendChild(document.createTextNode(legoColors[color].name));
-                    label.appendChild(pixelCountSpan);
-                    label.style.backgroundColor = '#' + color;
-                    label.style.width = '100%';
-                    label.style.color = legoColors[color].textColor;
-
-                    const cell = document.createElement('div');
-                    cell.className = 'col-xl-3 col-lg-4 col-sm-6 col-12 mb-1'; // Adjust the column classes as needed
-                    cell.appendChild(label);
-
-                    checkboxContainer.appendChild(cell);
-                }
-            }
-
-            function hideProcessedImageSection() {
-                document.getElementById('processedImageSection').classList.add('d-none');
-            }
-
-            function showProcessedImageSection() {
-                document.getElementById('processedImageSection').classList.remove('d-none');
-            }
-        </script>
-
-        <script src="calculate-image-dimensions.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-
     </body>
 </html>
