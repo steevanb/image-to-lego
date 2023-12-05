@@ -1,20 +1,34 @@
 onmessage = function (e) {
-    const imageData = e.data.imageData;
-    const selectedColors = e.data.selectedColors;
-    const colorsType = e.data.colorsType;
+    if (e.data.type === 'processImage') {
+        const imageData = e.data.imageData;
+        const selectedColors = e.data.selectedColors;
+        const colorsType = e.data.colorsType;
 
-    const pixels = imageData.data;
+        const pixels = imageData.data;
 
-    for (let i = 0; i < pixels.length; i += 4) {
-        const closestColor = findClosestColor(pixels[i], pixels[i + 1], pixels[i + 2], selectedColors, colorsType);
-        pixels[i] = closestColor.red;
-        pixels[i + 1] = closestColor.green;
-        pixels[i + 2] = closestColor.blue;
+        let callProgress = 0;
 
-        postMessage({ percentage: (i / pixels.length) * 100 });
+        for (let i = 0; i < pixels.length; i += 4) {
+            const closestColor = findClosestColor(pixels[i], pixels[i + 1], pixels[i + 2], selectedColors, colorsType);
+            pixels[i] = closestColor.red;
+            pixels[i + 1] = closestColor.green;
+            pixels[i + 2] = closestColor.blue;
+
+            callProgress++;
+            if (callProgress >= 50) {
+                postMessage({
+                    type: 'progress',
+                    percentage: (i / pixels.length) * 100
+                });
+                callProgress = 0;
+            }
+        }
+
+        postMessage({
+            type: 'done',
+            processedImageData: imageData
+        });
     }
-
-    postMessage({ processedImageData: imageData });
 };
 
 function findClosestColor(red, green, blue, selectedColors, colorsType) {

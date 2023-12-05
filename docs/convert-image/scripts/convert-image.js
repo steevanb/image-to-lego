@@ -6,10 +6,21 @@ imageUpload.addEventListener('change', function() {
     setOriginalImage();
 });
 
+document.getElementById('processImageButton').addEventListener('click', function() {
+    if (window.isProcessing) {
+        cancelProcess();
+    } else {
+        processImage();
+    }
+});
+
 document.getElementById('originalImage').addEventListener('load', function() {
     updateImageDimensions();
     updateImageSize();
 });
+
+window.isProcessing = false;
+window.worker = null;
 
 function processImage() {
     if (document.getElementById('originalImage').src.length > 0) {
@@ -17,24 +28,15 @@ function processImage() {
             checkAllCheckboxes();
         }
 
-        // Afficher le spinner et masquer le texte du bouton
         document.getElementById('processingSpinner').style.display = 'inline-block';
         document.getElementById('processImageText').style.display = 'none';
         hideProcessedImageSection();
 
-        // Afficher le pourcentage de complétion et masquer le texte du bouton
         const completionPercentage = document.getElementById('completionPercentage');
         completionPercentage.style.display = 'inline-block';
         completionPercentage.innerText = '0%';
 
-        const imageUpload = document.getElementById('imageUpload');
         const processedImage = document.getElementById('processedImage');
-
-        // Get selected Lego colors
-        const selectedColors = Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
-            .filter(checkbox => checkbox.checked)
-            .map(checkbox => checkbox.value);
-
         const reader = new FileReader();
 
         // Read the selected image
@@ -43,34 +45,43 @@ function processImage() {
             img.src = e.target.result;
 
             img.onload = function () {
-                // Process the image and display the processed image
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 canvas.width = img.width;
                 canvas.height = img.height;
                 ctx.drawImage(img, 0, 0, img.width, img.height);
 
-                // Créez un worker
-                const worker = new Worker('imageProcessWorker.js');
+                worker = new Worker('scripts/imageProcessWorker.js');
 
-                // Envoyez les données nécessaires au worker
                 const imageData = ctx.getImageData(0, 0, img.width, img.height);
                 const selectedColors = Array.from(legoColorsCheckboxes.getElementsByTagName('input'))
                     .filter(checkbox => checkbox.checked)
                     .map(checkbox => checkbox.value);
 
-                worker.postMessage({
+                window.worker.postMessage({
+                    type: 'processImage',
                     imageData: imageData,
                     selectedColors: selectedColors,
                     colorsType: document.querySelector('input[name="colorsType"]:checked').value
                 });
 
+                worker.onerror = function(e) {
+                    window.isProcessing = false;
+                };
+                worker.onclose = function(e) {
+                    window.isProcessing = false;
+                };
+
+                window.isProcessing = true;
+
                 worker.onmessage = function(e) {
-                    if (e.data.percentage !== undefined) {
-                        // Mettez à jour le pourcentage de complétion
-                        completionPercentage.innerText = e.data.percentage.toFixed(0) + '%';
-                    } else {
-                        // Use the processed image data directly
+                    if (e.data.type === 'progress') {
+                        if (e.data.percentage !== undefined) {
+                            completionPercentage.innerText = e.data.percentage.toFixed(0) + '%';
+                        }
+                    } else if (e.data.type === 'done') {
+                        window.isProcessing = false;
+
                         const processedImageData = e.data.processedImageData;
                         ctx.putImageData(processedImageData, 0, 0);
                         processedImage.src = canvas.toDataURL('image/png');
@@ -107,13 +118,9 @@ function processImage() {
 
                         updateProcessedImageDimensions();
                         updateProcessedImageLegosCount();
-
-                        // Cacher le spinner et afficher le texte du bouton après le traitement de l'image
-                        document.getElementById('processingSpinner').style.display = 'none';
-                        document.getElementById('processImageText').style.display = 'inline-block';
-                        completionPercentage.style.display = 'none';
+                        showProcessImageButton();
                     }
-                }
+                };
             };
         };
 
@@ -128,6 +135,21 @@ function processImage() {
     } else {
         alert('Please select an image.');
     }
+}
+
+function showProcessImageButton() {
+    document.getElementById('processingSpinner').style.display = 'none';
+    document.getElementById('processImageText').style.display = 'inline-block';
+    completionPercentage.style.display = 'none';
+}
+
+function cancelProcess() {
+    if (window.worker !== null) {
+        window.worker.terminate();
+    }
+    hideProcessedImageSection();
+    showProcessImageButton();
+    window.isProcessing = false;
 }
 
 function dataURItoBlob(dataURI) {
@@ -158,7 +180,6 @@ function rgbToHex(red, green, blue) {
     return paddedHex.toUpperCase();
 }
 
-// Ajouter une fonction pour compter le nombre de pixels d'une couleur spécifique dans l'image
 function countPixels(imageData, targetColor) {
     const pixels = imageData.data;
     let count = 0;
@@ -174,7 +195,6 @@ function countPixels(imageData, targetColor) {
     return count;
 }
 
-// Ajoutez cette fonction pour calculer les dimensions de l'image
 function updateImageDimensions() {
     const originalImage = document.getElementById('originalImage');
     const imageDimensionsElement = document.getElementById('imageDimensions');
