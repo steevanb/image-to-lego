@@ -56,6 +56,7 @@ h1 {
     border-bottom: 2px solid #D5841DFF;
     font-size: 2rem;
     color: #D5841DFF;
+    padding-bottom: 3px;
 }
 
 .card-body {

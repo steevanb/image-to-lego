@@ -64,3 +64,103 @@ const legoColors = {
     'E79E1D': {name: 'Pearl gold', textColor: 'black', blackAndWhite: false},
     'C0C0C0': {name: 'Metallic silver', textColor: 'black', blackAndWhite: false},
 };
+
+document.getElementById('checkAll').addEventListener('click', function () {
+    checkAllCheckboxes();
+});
+
+document.getElementById('uncheckAll').addEventListener('click', function () {
+    const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
+    for (const checkbox of checkboxes) {
+        checkbox.checked = false;
+    }
+});
+
+function updateCheckboxes(usedColors, imageData) {
+    const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
+
+    for (const checkbox of checkboxes) {
+        checkbox.checked = usedColors.includes(checkbox.value);
+        checkbox.dataset.pixelCount = countPixels(imageData, hexToRgb(checkbox.value));
+    }
+}
+
+window.checkAllCheckboxes = function () {
+    const checkboxes = legoColorsCheckboxes.getElementsByTagName('input');
+    for (const checkbox of checkboxes) {
+        checkbox.checked = checkbox.parentElement.parentElement.classList.contains('d-none') === false;
+    }
+}
+
+function createColorCheckboxes() {
+    const checkboxContainer = document.getElementById('legoColorsCheckboxes');
+    for (const color in legoColors) {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = color;
+        checkbox.id = color;
+        checkbox.checked = true;
+        checkbox.style.marginLeft = '5px';
+        checkbox.style.marginRight = '3px';
+
+        const pixelCountSpan = document.createElement('span');
+        pixelCountSpan.className = 'pixel-count';
+
+        const label = document.createElement('label');
+        label.htmlFor = color;
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(legoColors[color].name));
+        label.appendChild(pixelCountSpan);
+        label.style.backgroundColor = '#' + color;
+        label.style.width = '100%';
+        label.style.color = legoColors[color].textColor;
+
+        const cell = document.createElement('div');
+        cell.className = 'col-xl-3 col-lg-4 col-sm-6 col-12 mb-1';
+        cell.appendChild(label);
+
+        checkboxContainer.appendChild(cell);
+    }
+}
+
+document.getElementById('toggleSelectLegoColors').addEventListener('click', function() {
+    if (areSelectLegoColorsHidden()) {
+        showSelectLegoColors();
+    } else {
+        hideSelectLegoColors();
+    }
+});
+
+function hideSelectLegoColors() {
+    document.querySelectorAll('.select-lego-colors').forEach(function(el) {
+        el.classList.add('d-none');
+    });
+
+    localStorage.setItem('selectLegoColorsVisibility', 'hidden');
+    document.getElementById('toggleSelectLegoColors').innerText = 'Show';
+}
+
+function showSelectLegoColors() {
+    document.querySelectorAll('.select-lego-colors').forEach(function(el) {
+        el.classList.remove('d-none');
+    });
+
+    localStorage.setItem('selectLegoColorsVisibility', 'visible');
+    document.getElementById('toggleSelectLegoColors').innerText = 'Hide';
+}
+
+function areSelectLegoColorsHidden() {
+    const selectLegoColors = document.querySelector('.select-lego-colors');
+    return selectLegoColors.classList.contains('d-none');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const selectLegoColorsVisibility = localStorage.getItem('selectLegoColorsVisibility');
+    if (selectLegoColorsVisibility === 'hidden') {
+        hideSelectLegoColors();
+    } else {
+        showSelectLegoColors();
+    }
+
+    createColorCheckboxes();
+});
