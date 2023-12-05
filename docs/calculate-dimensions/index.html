@@ -74,10 +74,41 @@ Almost nothing has been changed by me, a human.
                         <div class="card-body">
                             <h1>Lego mosaic dimensions</h1>
 
-                            <input type="file" class="form-control" id="legoMosaicDimensionsUploadedImage" accept="image/*">
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2>
+                                        Examples
+                                        <button id="toggleExampleImages" class="btn btn-primary btn-sm ms-1">Show</button>
+                                    </h2>
+                                    <div class="example-images">Click on an image to select it.</div>
+                                </div>
+                            </div>
+                            <div class="row pt-1 example-images">
+                                <div class="col-4 pe-1 text-center">
+                                    <img src="../examples/images/micky.png" class="img-thumbnail cursor-pointer" onclick="setOriginalImage(this)">
+                                </div>
+                                <div class="col-4 ps-1 pe-1 text-center">
+                                    <img src="../examples/images/tigre.png" class="img-thumbnail cursor-pointer" onclick="setOriginalImage(this)">
+                                </div>
+                                <div class="col-4 ps-1 text-center">
+                                    <img src="../examples/images/effeil-tower.png" class="img-thumbnail cursor-pointer" onclick="setOriginalImage(this)">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <h2 class="pt-2">Send your file</h2>
+                                    <input type="file" class="form-control" id="legoMosaicDimensionsUploadedImage" accept="image/*">
+                                </div>
+                            </div>
 
                             <div id="legoMosaicDimensionsContainer" class="d-none mt-3">
-                                <img id="legoMosaicDimensionsImage" src="#">
+                                <h2>Dimensions</h2>
+                                <div class="row">
+                                    <div class="col-12 text-center">
+                                        <img id="legoMosaicDimensionsImage" class="img-fluid" src="#">
+                                    </div>
+                                </div>
 
                                 <table class="table table-secondary mt-3 mb-0">
                                     <tbody>
@@ -104,7 +135,9 @@ Almost nothing has been changed by me, a human.
 
         <script src="scripts/options.js"></script>
         <script src="scripts/lego-mosaic-dimensions.js"></script>
-        <script src="../calculate-image-dimensions.js"></script>
+        <script src="../scripts/calculate-image-dimensions.js"></script>
+        <script src="../scripts/examples.js"></script>
+        <script src="scripts/examples.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
     </body>

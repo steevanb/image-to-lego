@@ -1,39 +1,33 @@
-document.addEventListener('DOMContentLoaded', function() {
-    const exampleImagesVisibility = localStorage.getItem('exampleImagesVisibility');
-    if (exampleImagesVisibility === 'hidden') {
-        hideExampleImages();
+function setOriginalImage(imgElement = null) {
+    const originalImage = document.getElementById('originalImage');
+    const imageUpload = document.getElementById('imageUpload');
+
+    if (imgElement === null) {
+        if (imageUpload.files.length > 0) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                originalImage.src = e.target.result;
+
+                checkAllCheckboxes();
+                showImageDisplaySection();
+                hideProcessedImageSection();
+            };
+
+            reader.readAsDataURL(imageUpload.files[0]);
+        }
     } else {
-        showExampleImages();
+        originalImage.src = imgElement.src;
+        imageUpload.value = '';
+
+        checkAllCheckboxes();
+        showImageDisplaySection();
+        hideProcessedImageSection();
     }
-});
+}
 
-document.getElementById('toggleExampleImages').addEventListener('click', function() {
-    if (areExampleImagesHidden()) {
-        showExampleImages();
-    } else {
-        hideExampleImages();
-    }
-});
-
-function hideExampleImages() {
-    document.querySelectorAll('.example-images').forEach(function(el) {
-        el.classList.add('d-none');
+document.querySelectorAll('.img-example').forEach(function(image) {
+    image.addEventListener('click', function(el) {
+        setOriginalImage(image);
     });
-
-    localStorage.setItem('exampleImagesVisibility', 'hidden');
-    document.getElementById('toggleExampleImages').innerText = 'Show';
-}
-
-function showExampleImages() {
-    document.querySelectorAll('.example-images').forEach(function(el) {
-        el.classList.remove('d-none');
-    });
-
-    localStorage.setItem('exampleImagesVisibility', 'visible');
-    document.getElementById('toggleExampleImages').innerText = 'Hide';
-}
-
-function areExampleImagesHidden() {
-    const exampleImage = document.querySelector('.example-images');
-    return exampleImage.classList.contains('d-none');
-}
+});
