@@ -13,5 +13,5 @@ function getImageDimensions(processedImage) {
         processedImageHeightUnit = 'm';
     }
 
-    return `${processedImageWidth.toFixed(2)}${processedImageWidthUnit} x ${processedImageHeight.toFixed(2)}${processedImageHeightUnit}`;
+    return `${processedImageWidth.toFixed(2).toLocaleString('en-EN')}${processedImageWidthUnit} x ${processedImageHeight.toFixed(2).toLocaleString('en-EN')}${processedImageHeightUnit}`;
 }
