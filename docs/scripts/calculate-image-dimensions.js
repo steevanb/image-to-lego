@@ -7,7 +7,7 @@ function getImageDimensions(processedImage) {
     }
 
     let processedImageHeight = processedImage.naturalHeight * 0.8;
-    let processedImageHeightUnit = 'm';
+    let processedImageHeightUnit = 'cm';
     if (processedImageHeight > 100) {
         processedImageHeight = processedImageHeight / 100;
         processedImageHeightUnit = 'm';
